@@ -28,6 +28,11 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore RadioM3U/RadioM3U.csproj
+        
+      - name: Update manifest
+        run: |
+          chmod +x ./update-manifest.sh
+          ./update-manifest.sh
 
       - name: Build
         run: dotnet build RadioM3U/RadioM3U.csproj --configuration Release --no-restore
