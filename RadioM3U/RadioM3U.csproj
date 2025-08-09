@@ -7,7 +7,7 @@
     <LangVersion>12.0</LangVersion>
     <AssemblyTitle>RadioM3U</AssemblyTitle>
     <Description>Importa playlist M3U e crea stazioni radio come STRM con cover.</Description>
-    <Version>0.1.6</Version>
+    <Version>0.1.7</Version>
     <Authors>RadioM3U</Authors>
     <RootNamespace>RadioM3U</RootNamespace>
   </PropertyGroup>

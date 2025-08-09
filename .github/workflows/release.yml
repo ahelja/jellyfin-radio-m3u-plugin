@@ -17,48 +17,49 @@ jobs:
       with:
         dotnet-version: '8.0.x'
         
-    - name: Get version from tag
-      run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
-      
     - name: Restore dependencies
       run: dotnet restore RadioM3U/RadioM3U.csproj
       
     - name: Build
       run: dotnet build RadioM3U/RadioM3U.csproj --configuration Release --no-restore
       
-    - name: Create package
+    - name: Package plugin
       run: |
         cd RadioM3U/bin/Release/net8.0
-        zip -9 RadioM3U_${GITHUB_REF_NAME}.zip RadioM3U.dll
+        zip -r RadioM3U_${GITHUB_REF_NAME}.zip RadioM3U.dll RadioM3U.pdb
+        echo "Package created: RadioM3U_${GITHUB_REF_NAME}.zip"
         ls -la RadioM3U_${GITHUB_REF_NAME}.zip
         
     - name: Calculate checksum
       run: |
         cd RadioM3U/bin/Release/net8.0
-        CHECKSUM=$(sha256sum RadioM3U_${GITHUB_REF_NAME}.zip | cut -d' ' -f1)
-        echo "CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
-        echo "Checksum: $CHECKSUM"
+        sha256sum RadioM3U_${GITHUB_REF_NAME}.zip > checksum.txt
+        echo "Checksum:"
+        cat checksum.txt
         
-    - name: Create Release
-      uses: softprops/action-gh-release@v2
-      with:
-        files: RadioM3U/bin/Release/net8.0/RadioM3U_${{ github.ref_name }}.zip
-        generate_release_notes: true
-        name: Release ${{ github.ref_name }}
-        body: |
-          ## RadioM3U Plugin Release ${{ github.ref_name }}
-          
-          ### Installation
-          1. Download the `RadioM3U_${{ github.ref_name }}.zip` file
-          2. Extract it to your Jellyfin plugins folder: `/var/lib/jellyfin/plugins/RadioM3U/`
-          3. Restart Jellyfin
-          
-          ### Alternative: Plugin Repository
-          Add this URL to Jellyfin Plugin Repositories:
-          ```
-          https://raw.githubusercontent.com/${{ github.repository }}/main/manifest.json
-          ```
-          
-          **SHA256 Checksum:** `${{ env.CHECKSUM }}`
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      id: create_release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: RadioM3U ${{ github.ref_name }}
+        body: |
+          ## RadioM3U Plugin ${{ github.ref_name }}
+          
+          Download the ZIP file and extract to your Jellyfin plugins folder.
+          
+          **Installation path:** `/var/lib/jellyfin/plugins/RadioM3U/`
+        draft: false
+        prerelease: false
+        
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: RadioM3U/bin/Release/net8.0/RadioM3U_${{ github.ref_name }}.zip
+        asset_name: RadioM3U_${{ github.ref_name }}.zip
+        asset_content_type: application/zip
