@@ -30,8 +30,8 @@ jobs:
       - name: Package
         run: |
           cd RadioM3U/bin/Release/net8.0
-          zip -9 RadioM3U_${VERSION}.zip RadioM3U.dll
-          shasum -a 256 RadioM3U_${VERSION}.zip | awk '{print $1}' > sha256.txt
+          zip -9 RadioM3U_${GITHUB_REF_NAME}.zip RadioM3U.dll
+          shasum -a 256 RadioM3U_${GITHUB_REF_NAME}.zip | awk '{print $1}' > sha256.txt
         shell: bash
 
       - name: Upload artifact
@@ -39,7 +39,7 @@ jobs:
         with:
           name: dist
           path: |
-            RadioM3U/bin/Release/net8.0/RadioM3U_${{ env.VERSION }}.zip
+            RadioM3U/bin/Release/net8.0/RadioM3U_${{ github.ref_name }}.zip
             RadioM3U/bin/Release/net8.0/sha256.txt
 
   release:
@@ -70,7 +70,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/RadioM3U_${{ env.VERSION }}.zip
+            dist/RadioM3U_${{ github.ref_name }}.zip
           generate_release_notes: true
 
       - name: Set timestamp
@@ -86,7 +86,7 @@ jobs:
       - name: Update manifest.json
         uses: DamianReeves/write-file-action@v1.3
         with:
-          path: RadioM3U/manifest.json
+          path: manifest.json
           contents: |
             {
               "name": "RadioM3U Repository",
@@ -114,7 +114,7 @@ jobs:
                       "targetAbi": "10.9.0.0",
                       "runtime": "any",
                       "rid": "any",
-                      "assetUrl": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/RadioM3U_${{ env.VERSION }}.zip",
+                      "assetUrl": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/RadioM3U_${{ github.ref_name }}.zip",
                       "checksum": "SHA256:${{ steps.sum.outputs.sha }}"
                     }
                   ]
@@ -127,7 +127,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add RadioM3U/manifest.json
+          git add manifest.json
           git commit -m "chore: update manifest for ${{ github.ref_name }}" || echo "No changes"
           git push
         shell: bash
