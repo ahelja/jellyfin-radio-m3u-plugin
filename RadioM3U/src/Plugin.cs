@@ -2,6 +2,7 @@ using System;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Plugins;
+using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
 
 namespace RadioM3U;
@@ -21,7 +22,7 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
 
     public ILogger Logger { get; }
 
-    public PluginInfo GetPluginInfo() => new()
+    public override PluginInfo GetPluginInfo() => new()
     {
         Name = Name,
         Id = Id
