@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,8 +30,9 @@ jobs:
       - name: Package
         run: |
           cd RadioM3U/bin/Release/net8.0
-          zip -9 RadioM3U_${GITHUB_REF_NAME}.zip RadioM3U.dll
-          shasum -a 256 RadioM3U_${GITHUB_REF_NAME}.zip | awk '{print $1}' > sha256.txt
+          # Include all necessary files in the ZIP
+          zip -9 -r RadioM3U_${GITHUB_REF_NAME}.zip RadioM3U.dll RadioM3U.pdb *.json *.deps.json *.runtimeconfig.json 2>/dev/null || zip -9 RadioM3U_${GITHUB_REF_NAME}.zip RadioM3U.dll
+          sha256sum RadioM3U_${GITHUB_REF_NAME}.zip | awk '{print $1}' > sha256.txt
         shell: bash
 
       - name: Upload artifact
