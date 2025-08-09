@@ -14,9 +14,9 @@
       "description": "Importa una playlist .m3u e genera cartelle per gruppo con file .strm, immagini e metadata.",
       "category": "Music",
       "owner": "ahelja",
-      "imageUrl": "https://raw.githubusercontent.com/OWNER/REPO/BRANCH/01.png",
-      "sourceUrl": "https://github.com/OWNER/REPO",
-      "changelog": "https://github.com/OWNER/REPO/releases",
+      "imageUrl": "https://raw.githubusercontent.com/ahelja/jellyfin-radio-m3u-plugin/main/01.png",
+      "sourceUrl": "https://github.com/ahelja/jellyfin-radio-m3u-plugin",
+      "changelog": "https://github.com/ahelja/jellyfin-radio-m3u-plugin/releases",
       "assets": [
         {
           "name": "RadioM3U",
@@ -24,7 +24,7 @@
           "targetAbi": "10.9.0.0",
           "runtime": "any",
           "rid": "any",
-          "assetUrl": "https://github.com/OWNER/REPO/releases/download/v0.1.0/RadioM3U_0.1.0.zip",
+          "assetUrl": "https://github.com/ahelja/jellyfin-radio-m3u-plugin/releases/download/v0.1.0/RadioM3U_v0.1.0.zip",
           "checksum": "SHA256:REPLACE_ME"
         }
       ]
