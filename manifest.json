@@ -2,12 +2,12 @@
   "name": "RadioM3U Repository",
   "description": "Repository per il plugin RadioM3U che importa playlist M3U come stazioni radio.",
   "manifestVersion": 1,
-  "timestamp": "2025-08-09T07:50:12Z",
+  "timestamp": "2023-08-09T07:50:12Z",
   "plugins": [
     {
       "name": "RadioM3U",
       "guid": "f5c7a89d-107b-4c2f-9f17-6b6540b8e3e8",
-      "version": "0.2.0",
+      "version": "0.3.3",
       "targetAbi": "10.9.0.0",
       "framework": "net8.0",
       "overview": "Importa playlist M3U e crea stazioni radio con cover.",
@@ -20,12 +20,12 @@
       "assets": [
         {
           "name": "RadioM3U",
-          "version": "0.2.0",
+          "version": "0.3.3",
           "targetAbi": "10.9.0.0",
           "runtime": "any",
           "rid": "any",
           "assetUrl": "https://github.com/ahelja/jellyfin-radio-m3u-plugin/releases/download/v0.3.3/RadioM3U_v0.3.3.zip",
-          "checksum": "SHA256:REPLACE_ME"
+          "checksum": "SHA256:b30b0105ea7e3b294a73ed7462954993bcc4382d60831e047c531b5fe930271d"
         }
       ]
     }
