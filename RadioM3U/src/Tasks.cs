@@ -1,12 +1,13 @@
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Plugins;
-using MediaBrowser.Common;
 using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace RadioM3U;
 
-public class ImportTask : IServerEntryPoint
+public class ImportTask : IStartupTask
 {
     private readonly ILogger _log;
     private readonly ILibraryManager _libraryManager;
@@ -17,7 +18,7 @@ public class ImportTask : IServerEntryPoint
         _libraryManager = libraryManager;
     }
 
-    public async Task RunAsync()
+    public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         await Task.Yield();
 
