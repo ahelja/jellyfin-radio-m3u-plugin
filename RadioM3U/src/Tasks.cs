@@ -1,6 +1,11 @@
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Plugins;
+using MediaBrowser.Model.Tasks;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,13 +30,14 @@ public class ImportTask : IScheduledTask
     public string Description => "Imports radio stations from M3U files";
     public string Category => "RadioM3U";
 
-    public Task Execute(CancellationToken cancellationToken, IProgress<double> progress)
+    public Task ExecuteAsync(IProgress<double> progress, CancellationToken cancellationToken)
     {
         progress?.Report(0);
-        return ExecuteInternal(cancellationToken, progress);
+        // Create a no-op progress object if progress is null to avoid null checks downstream
+        return ExecuteInternalAsync(progress ?? new Progress<double>(), cancellationToken);
     }
 
-    private async Task ExecuteInternal(CancellationToken cancellationToken, IProgress<double> progress)
+    private async Task ExecuteInternalAsync(IProgress<double> progress, CancellationToken cancellationToken)
     {
         await Task.Yield();
 

@@ -22,11 +22,12 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
 
     public ILogger Logger { get; }
 
-    public override PluginInfo GetPluginInfo() => new()
-    {
-        Name = Name,
-        Id = Id
-    };
+    public override PluginInfo GetPluginInfo() => new(
+        Name,
+        Version.Parse("0.2.0"),
+        "Importa playlist M3U e crea stazioni radio come STRM con cover.",
+        Id,
+        false);
 
     public System.Collections.Generic.IEnumerable<MediaBrowser.Model.Plugins.PluginPageInfo> GetPages()
     {
