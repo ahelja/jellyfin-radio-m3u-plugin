@@ -7,7 +7,7 @@
     {
       "name": "RadioM3U",
       "guid": "f5c7a89d-107b-4c2f-9f17-6b6540b8e3e8",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "targetAbi": "10.9.0.0",
       "framework": "net8.0",
       "overview": "Importa playlist M3U e crea stazioni radio con cover.",
@@ -20,11 +20,11 @@
       "assets": [
         {
           "name": "RadioM3U",
-          "version": "0.1.0",
+          "version": "0.1.2",
           "targetAbi": "10.9.0.0",
           "runtime": "any",
           "rid": "any",
-          "assetUrl": "https://github.com/ahelja/jellyfin-radio-m3u-plugin/releases/download/v0.1.0/RadioM3U_v0.1.0.zip",
+          "assetUrl": "https://github.com/ahelja/jellyfin-radio-m3u-plugin/releases/download/v0.1.2/RadioM3U_v0.1.2.zip",
           "checksum": "SHA256:REPLACE_ME"
         }
       ]
