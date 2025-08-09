@@ -1,5 +1,3 @@
-using MediaBrowser.Common;
-using MediaBrowser.Common.Plugins;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Plugins;
 using Microsoft.Extensions.Logging;
@@ -8,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace RadioM3U;
 
-public class ImportTask : IStartupTask
+/// <summary>
+/// Task that runs at startup to import radio stations from M3U files
+/// </summary>
+public class ImportTask : IScheduledTask
 {
     private readonly ILogger _log;
     private readonly ILibraryManager _libraryManager;
@@ -19,7 +20,18 @@ public class ImportTask : IStartupTask
         _libraryManager = libraryManager;
     }
 
-    public async Task ExecuteAsync(CancellationToken cancellationToken)
+    public string Name => "Import Radio M3U Stations";
+    public string Key => "RadioM3UImportTask";
+    public string Description => "Imports radio stations from M3U files";
+    public string Category => "RadioM3U";
+
+    public Task Execute(CancellationToken cancellationToken, IProgress<double> progress)
+    {
+        progress?.Report(0);
+        return ExecuteInternal(cancellationToken, progress);
+    }
+
+    private async Task ExecuteInternal(CancellationToken cancellationToken, IProgress<double> progress)
     {
         await Task.Yield();
 
@@ -36,6 +48,7 @@ public class ImportTask : IStartupTask
             var builder = new LibraryBuilder(new LoggerFactory(), _libraryManager);
             var count = await builder.BuildAsync(cfg.OutputLibraryPath, stations, cfg);
             _log.LogInformation("RadioM3U: Imported {Count} stations", count);
+            progress?.Report(100);
         }
         catch (Exception ex)
         {
@@ -43,5 +56,12 @@ public class ImportTask : IStartupTask
         }
     }
 
-    public void Dispose() { }
+    public IEnumerable<TaskTriggerInfo> GetDefaultTriggers()
+    {
+        // Run at startup and at 2 AM every day
+        return new[] {
+            new TaskTriggerInfo { Type = TaskTriggerInfo.TriggerStartup },
+            new TaskTriggerInfo { Type = TaskTriggerInfo.TriggerDaily, TimeOfDayTicks = TimeSpan.FromHours(2).Ticks }
+        };
+    }
 }
