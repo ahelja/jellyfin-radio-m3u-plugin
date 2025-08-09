@@ -1,72 +1,69 @@
 # Jellyfin RadioM3U Plugin
 
-Plugin per Jellyfin che importa una playlist M3U e crea una libreria "Stations" con immagini e categorie. Mostra le stazioni come album e riproduce gli stream.
+A Jellyfin plugin that imports an M3U playlist and creates a "Stations" library with images and categories. It displays stations as albums and plays their streams.
 
-## Funzioni
-- Import da file `.m3u` locale o URL remoto
-- Parsing tag `#EXTINF` con `tvg-name`, `tvg-logo`, `group-title`
-- Creazione di elementi Jellyfin di tipo Audio con metadata e cover
-- Vista by group (Classic, Electro, Jazz, Hi‑Fi, Rock, All)
+## Features
+- Import from a local `.m3u` file or a remote URL
+- Parse `#EXTINF` tags with `tvg-name`, `tvg-logo`, `group-title`
+- Create Jellyfin Audio items with metadata and cover art
+- Group view (Classic, Electro, Jazz, Hi‑Fi, Rock, All)
 
-## Installazione
+## Installation
 
-### Metodo 1: Tramite Repository GitHub (Consigliato)
-
-1. Apri Jellyfin Dashboard
-2. Vai su "Plugins" → "Repositories"
-3. Aggiungi questo URL:
+### Method 1: Via GitHub Repository (Recommended)
+1. Open Jellyfin Dashboard
+2. Go to "Plugins" → "Repositories"
+3. Add this URL:
    ```
    https://raw.githubusercontent.com/ahelja/jellyfin-radio-m3u-plugin/main/manifest.json
    ```
-4. Vai su "Catalog" e installa "RadioM3U"
-5. Riavvia Jellyfin
+4. Go to "Catalog" and install "RadioM3U"
+5. Restart Jellyfin
 
-### Metodo 2: Download Release
-1. Scarica l'ultimo release da [GitHub Releases](https://github.com/ahelja/jellyfin-radio-m3u-plugin/releases)
-2. Estrai il file ZIP nella cartella plugins di Jellyfin:
+### Method 2: Download Release
+1. Download the latest release from [GitHub Releases](https://github.com/ahelja/jellyfin-radio-m3u-plugin/releases)
+2. Extract the ZIP into Jellyfin’s plugins folder:
    - Linux: `/var/lib/jellyfin/plugins/RadioM3U/`
    - macOS: `~/Library/Application Support/jellyfin/plugins/RadioM3U/`
    - Windows: `%ProgramData%\Jellyfin\Server\plugins\RadioM3U\`
-3. Riavvia Jellyfin
+3. Restart Jellyfin
 
-### Metodo 3: Build Locale
-1. Prerequisiti: .NET 8 SDK
+### Method 3: Local Build
+1. Prerequisites: .NET 8 SDK
 2. Build
    ```bash
    git clone https://github.com/ahelja/jellyfin-radio-m3u-plugin.git
    cd jellyfin-radio-m3u-plugin
    dotnet build RadioM3U/RadioM3U.csproj -c Release
    ```
-3. Copia l'output `RadioM3U/bin/Release/net8.0/RadioM3U.dll` nella cartella plugin del server Jellyfin
-4. Riavvia Jellyfin
+3. Copy `RadioM3U/bin/Release/net8.0/RadioM3U.dll` to the Jellyfin server plugins folder
+4. Restart Jellyfin
 
-## Compilazione Automatica con GitHub
+## Automated Builds with GitHub
+This project includes GitHub Actions for automated builds.
 
-Il progetto include GitHub Actions per la compilazione automatica:
-
-### Per sviluppatori - Creare una release:
-
+### For developers — Create a release
 ```bash
-# Committa le modifiche
+# Commit changes
 git add .
 git commit -m "Release v0.1.0"
 
-# Crea e pusha il tag per trigger la release
+# Create and push the tag to trigger the release
 git tag v0.1.0
 git push origin main --tags
 ```
 
-Il workflow GitHub Actions:
-- Compila automaticamente il plugin
-- Crea il file ZIP di distribuzione
-- Pubblica la release su GitHub
-- Aggiorna il manifest con il checksum corretto
+The GitHub Actions workflow:
+- Builds the plugin
+- Creates the distribution ZIP
+- Publishes the release on GitHub
+- Updates the manifest with the correct checksum
 
-## Configurazione
-- In Dashboard > Plugins > RadioM3U:
-  - Path del file M3U (es. `/config/radio.m3u`)
-  - Cartella immagini (opzionale). Se non presente usa i logo dal tag o fallback.
+## Configuration
+- Dashboard > Plugins > RadioM3U:
+  - M3U file path (e.g., `/config/radio.m3u`)
+  - Images folder (optional). If not present, uses logos from tags or a fallback.
 
-## Note
-- Il plugin non scarica file audio; usa stream URL.
-- Supporta AAC/MP3/FLAC se supportati dal server/clients.
+## Notes
+- The plugin does not download audio files; it uses stream URLs.
+- Supports AAC/MP3/FLAC if supported by the server/clients.
