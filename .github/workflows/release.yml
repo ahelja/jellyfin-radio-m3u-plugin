@@ -1,8 +1,12 @@
 name: Build and Release
 
 on:
+  workflow_dispatch:
   push:
-    tags: [ 'v*' ]
+    branches: [ main ]
+    paths:
+      - 'RadioM3U/RadioM3U.csproj'
+      - 'manifest.json'
 
 permissions:
   contents: write
@@ -19,9 +23,11 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Get project name
-        id: get_project_name
-        run: echo "name=$(basename RadioM3U/RadioM3U.csproj .csproj)" >> $GITHUB_OUTPUT
+      - name: Get project info
+        id: get_project_info
+        run: |
+          echo "name=$(basename RadioM3U/RadioM3U.csproj .csproj)" >> $GITHUB_OUTPUT
+          echo "version=$(grep -o '<Version>[^<]*</Version>' RadioM3U/RadioM3U.csproj | sed 's/<Version>\(.*\)<\/Version>/\1/')" >> $GITHUB_OUTPUT
 
       - name: Clear NuGet cache
         run: dotnet nuget locals all --clear
@@ -39,18 +45,22 @@ jobs:
 
       - name: Package plugin
         run: |
-          mkdir -p "dist/${{ steps.get_project_name.outputs.name }}"
-          cp "RadioM3U/bin/Release/net8.0/${{ steps.get_project_name.outputs.name }}.dll" "dist/${{ steps.get_project_name.outputs.name }}/"
-          cp "RadioM3U/bin/Release/net8.0/${{ steps.get_project_name.outputs.name }}.pdb" "dist/${{ steps.get_project_name.outputs.name }}/"
-          cp manifest.json "dist/${{ steps.get_project_name.outputs.name }}/"
+          mkdir -p "dist/${{ steps.get_project_info.outputs.name }}"
+          cp "RadioM3U/bin/Release/net8.0/${{ steps.get_project_info.outputs.name }}.dll" "dist/${{ steps.get_project_info.outputs.name }}/"
+          cp "RadioM3U/bin/Release/net8.0/${{ steps.get_project_info.outputs.name }}.pdb" "dist/${{ steps.get_project_info.outputs.name }}/"
+          cp manifest.json "dist/${{ steps.get_project_info.outputs.name }}/"
           cd dist
-          zip -r "${{ steps.get_project_name.outputs.name }}_${{ github.ref_name }}.zip" "${{ steps.get_project_name.outputs.name }}"
+          ZIP_NAME="${{ steps.get_project_info.outputs.name }}_v${{ steps.get_project_info.outputs.version }}.zip"
+          zip -r "$ZIP_NAME" "${{ steps.get_project_info.outputs.name }}"
           cd ..
-          sha256sum "dist/${{ steps.get_project_name.outputs.name }}_${{ github.ref_name }}.zip" > "dist/${{ steps.get_project_name.outputs.name }}_${{ github.ref_name }}.zip.sha256sum"
+          sha256sum "dist/${{ steps.get_project_info.outputs.name }}_v${{ steps.get_project_info.outputs.version }}.zip" > "dist/${{ steps.get_project_info.outputs.name }}_v${{ steps.get_project_info.outputs.version }}.zip.sha256sum"
+          echo "zip_name=${{ steps.get_project_info.outputs.name }}_v${{ steps.get_project_info.outputs.version }}.zip" >> $GITHUB_ENV
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
+          name: "Release v${{ steps.get_project_info.outputs.version }}"
+          tag_name: "v${{ steps.get_project_info.outputs.version }}"
           files: |
-            dist/${{ steps.get_project_name.outputs.name }}_${{ github.ref_name }}.zip
-            dist/${{ steps.get_project_name.outputs.name }}_${{ github.ref_name }}.zip.sha256sum
+            dist/${{ steps.get_project_info.outputs.name }}_v${{ steps.get_project_info.outputs.version }}.zip
+            dist/${{ steps.get_project_info.outputs.name }}_v${{ steps.get_project_info.outputs.version }}.zip.sha256sum
