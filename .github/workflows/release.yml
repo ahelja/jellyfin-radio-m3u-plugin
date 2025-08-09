@@ -23,6 +23,9 @@ jobs:
         id: get_project_name
         run: echo "name=$(basename RadioM3U/RadioM3U.csproj .csproj)" >> $GITHUB_OUTPUT
 
+      - name: Clear NuGet cache
+        run: dotnet nuget locals all --clear
+
       - name: Restore dependencies
         run: dotnet restore RadioM3U/RadioM3U.csproj
 
