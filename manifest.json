@@ -24,8 +24,8 @@
           "targetAbi": "10.9.0.0",
           "runtime": "any",
           "rid": "any",
-          "assetUrl": "https://github.com/ahelja/jellyfin-radio-m3u-plugin/releases/download/v0.3.3/RadioM3U_v0.3.3.zip",
-          "checksum": "SHA256:ce56a33f7eb58efcb8ced132e1ab86867205b54d7fd3f6e0cbed1ec3db879918"
+          "assetUrl": "https://github.com/ahelja/jellyfin-radio-m3u-plugin/releases/download/v0.3.3/RadioM3U_v0.3.3_new.zip",
+          "checksum": "SHA256:70907d0ff77971cee7d405ca139ea8991b1af6af605e1bcad0d81177e22704da"
         }
       ]
     }

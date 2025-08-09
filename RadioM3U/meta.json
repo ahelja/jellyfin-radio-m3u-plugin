@@ -1,0 +1,13 @@
+{
+  "guid": "f5c7a89d-107b-4c2f-9f17-6b6540b8e3e8",
+  "name": "RadioM3U",
+  "version": "0.3.3",
+  "targetAbi": "10.9.0.0",
+  "framework": "net8.0",
+  "overview": "Importa playlist M3U e crea stazioni radio con cover.",
+  "description": "Importa una playlist .m3u e genera cartelle per gruppo con file .strm, immagini e metadata.",
+  "owner": "ahelja",
+  "category": "Music",
+  "imageUrl": "https://raw.githubusercontent.com/ahelja/jellyfin-radio-m3u-plugin/main/01.png",
+  "changelog": "https://github.com/ahelja/jellyfin-radio-m3u-plugin/releases"
+}
