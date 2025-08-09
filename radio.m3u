@@ -1,0 +1,31 @@
+#EXTM3U
+
+#EXTINF:-1 tvg-id="fip.electro" tvg-name="Fip Electro" tvg-logo="https://res.cloudinary.com/devfred/image/upload/cover/fip-electro.jpg" group-title="Electro",Fip Electro
+https://icecast.radiofrance.fr/fipelectro-hifi.aac?id=radiofrance
+
+#EXTINF:-1 tvg-id="linn.classic" tvg-name="Linn Classic" tvg-logo="https://res.cloudinary.com/devfred/image/upload/cover/linn-classic.png" group-title="Classic",Linn Classic
+http://radio.linn.co.uk:8004/autodj
+
+#EXTINF:-1 tvg-id="celtic.music.radio" tvg-name="Celtic Music Radio" tvg-logo="https://res.cloudinary.com/devfred/image/upload/cover/celtic-music-radio.png" group-title="Hi-Fi",Celtic Music Radio
+https://ukwesta.streaming.broadcast.radio/celtic
+
+#EXTINF:-1 tvg-id="linn.jazz" tvg-name="Linn Jazz" tvg-logo="https://res.cloudinary.com/devfred/image/upload/cover/linn-jazz.png" group-title="Jazz",Linn Jazz
+http://radio.linn.co.uk:8000/autodj
+
+#EXTINF:-1 tvg-id="fip.rock" tvg-name="Fip Rock" tvg-logo="https://res.cloudinary.com/devfred/image/upload/cover/fip-rock.jpg" group-title="Rock",Fip Rock
+https://icecast.radiofrance.fr/fiprock-hifi.aac?id=radiofrance
+
+#EXTINF:-1 tvg-id="octave.records" tvg-name="Octave Records" tvg-logo="https://res.cloudinary.com/devfred/image/upload/cover/octave-records.png" group-title="Hi-Fi",Octave Records
+https://octaverecords.out.airtime.pro/octaverecords_a
+
+#EXTINF:-1 tvg-id="linn.jazz" tvg-name="Linn Jazz" tvg-logo="https://res.cloudinary.com/devfred/image/upload/cover/linn-jazz.png" group-title="Jazz",Linn Jazz
+http://radio.linn.co.uk:8000/autodj
+
+#EXTINF:-1 tvg-id="fip.hi-fi" tvg-name="Fip Hi-Fi" tvg-logo="https://res.cloudinary.com/devfred/image/upload/cover/fip-hifi.jpg" group-title="Hi-Fi",Fip Hi-Fi
+https://icecast.radiofrance.fr/fip-hifi.aac?id=radiofrance
+
+#EXTINF:-1 tvg-id="naim.classic" tvg-name="Naim Classic" tvg-logo="https://res.cloudinary.com/devfred/image/upload/cover/naim-classic.png" group-title="Classic",Naim Classic
+http://mscp3.live-streams.nl:8250/class-flac.flac
+
+#EXTINF:-1 tvg-id="eight.ball.radio" tvg-name="8 Ball Radio" tvg-logo="https://res.cloudinary.com/devfred/image/upload/cover/8-ball.png" group-title="Hi-Fi",8 Ball Radio
+https://eightball.out.airtime.pro/eightball_a

@@ -1,0 +1,37 @@
+<div id="radio-m3u-config" style="padding:1rem">
+  <h2>RadioM3U</h2>
+  <form class="radio-m3u-form">
+    <div class="inputContainer">
+      <label>Path file M3U</label>
+      <input is="emby-input" id="m3uPath" type="text" />
+    </div>
+    <div class="inputContainer">
+      <label>Output library path (.strm)</label>
+      <input is="emby-input" id="outPath" type="text" />
+    </div>
+    <div class="checkboxContainer">
+      <label><input is="emby-checkbox" id="useLogos" type="checkbox"/> Usa loghi tvg-logo</label>
+    </div>
+    <button is="emby-button" type="submit">Salva</button>
+  </form>
+  <script>
+    (function(){
+      const pluginId = 'f5c7a89d-107b-4c2f-9f17-6b6540b8e3e8';
+      const page = document.querySelector('#radio-m3u-config');
+      ApiClient.getPluginConfiguration(pluginId).then(cfg => {
+        page.querySelector('#m3uPath').value = cfg.M3UPath || '';
+        page.querySelector('#outPath').value = cfg.OutputLibraryPath || '';
+        page.querySelector('#useLogos').checked = cfg.UseTvgLogos || false;
+      });
+      page.querySelector('form').addEventListener('submit', function(e){
+        e.preventDefault();
+        ApiClient.getPluginConfiguration(pluginId).then(cfg => {
+          cfg.M3UPath = page.querySelector('#m3uPath').value;
+          cfg.OutputLibraryPath = page.querySelector('#outPath').value;
+          cfg.UseTvgLogos = page.querySelector('#useLogos').checked;
+          ApiClient.updatePluginConfiguration(pluginId, cfg).then(Dashboard.processPluginConfigurationUpdateResult);
+        });
+      });
+    })();
+  </script>
+</div>
