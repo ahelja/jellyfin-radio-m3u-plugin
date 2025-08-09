@@ -30,15 +30,14 @@ jobs:
       run: |
         cd RadioM3U/bin/Release/net8.0
         zip -9 RadioM3U_${GITHUB_REF_NAME}.zip RadioM3U.dll
-        ls -la
+        ls -la RadioM3U_${GITHUB_REF_NAME}.zip
         
     - name: Calculate checksum
       run: |
         cd RadioM3U/bin/Release/net8.0
         CHECKSUM=$(sha256sum RadioM3U_${GITHUB_REF_NAME}.zip | cut -d' ' -f1)
         echo "CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
-        echo "$CHECKSUM" > checksum.txt
-        echo "Checksum calculated: $CHECKSUM"
+        echo "Checksum: $CHECKSUM"
         
     - name: Create Release
       uses: softprops/action-gh-release@v2
@@ -51,60 +50,15 @@ jobs:
           
           ### Installation
           1. Download the `RadioM3U_${{ github.ref_name }}.zip` file
-          2. Extract it to your Jellyfin plugins folder
+          2. Extract it to your Jellyfin plugins folder: `/var/lib/jellyfin/plugins/RadioM3U/`
           3. Restart Jellyfin
           
-          **Plugin Repository URL:**
+          ### Alternative: Plugin Repository
+          Add this URL to Jellyfin Plugin Repositories:
           ```
           https://raw.githubusercontent.com/${{ github.repository }}/main/manifest.json
           ```
           
-          **SHA256:** `${{ env.CHECKSUM }}`
+          **SHA256 Checksum:** `${{ env.CHECKSUM }}`
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Update manifest
-      run: |
-        cat > manifest.json << EOF
-        {
-          "name": "RadioM3U Repository", 
-          "description": "Repository per il plugin RadioM3U che importa playlist M3U come stazioni radio.",
-          "manifestVersion": 1,
-          "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-          "plugins": [
-            {
-              "name": "RadioM3U",
-              "guid": "f5c7a89d-107b-4c2f-9f17-6b6540b8e3e8",
-              "version": "${{ env.VERSION }}",
-              "targetAbi": "10.9.0.0", 
-              "framework": "net8.0",
-              "overview": "Importa playlist M3U e crea stazioni radio con cover.",
-              "description": "Importa una playlist .m3u e genera cartelle per gruppo con file .strm, immagini e metadata.",
-              "category": "Music",
-              "owner": "${{ github.repository_owner }}",
-              "imageUrl": "https://raw.githubusercontent.com/${{ github.repository }}/main/01.png",
-              "sourceUrl": "https://github.com/${{ github.repository }}",
-              "changelog": "https://github.com/${{ github.repository }}/releases",
-              "assets": [
-                {
-                  "name": "RadioM3U",
-                  "version": "${{ env.VERSION }}",
-                  "targetAbi": "10.9.0.0",
-                  "runtime": "any",
-                  "rid": "any", 
-                  "assetUrl": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/RadioM3U_${{ github.ref_name }}.zip",
-                  "checksum": "SHA256:${{ env.CHECKSUM }}"
-                }
-              ]
-            }
-          ]
-        }
-        EOF
-        
-    - name: Commit manifest
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add manifest.json
-        git commit -m "Update manifest for release ${{ github.ref_name }}" || echo "No changes to commit"
-        git push || echo "Push failed"
