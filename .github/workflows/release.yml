@@ -18,6 +18,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+          source-url: https://api.nuget.org/v3/index.json
 
       - name: Get project name
         id: get_project_name
