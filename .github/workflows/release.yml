@@ -10,59 +10,39 @@ permissions:
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
-        
-    - name: Restore dependencies
-      run: dotnet restore RadioM3U/RadioM3U.csproj
-      
-    - name: Build
-      run: dotnet build RadioM3U/RadioM3U.csproj --configuration Release --no-restore
-      
-    - name: Package plugin
-      run: |
-        cd RadioM3U/bin/Release/net8.0
-        zip -r RadioM3U_${GITHUB_REF_NAME}.zip RadioM3U.dll RadioM3U.pdb
-        echo "Package created: RadioM3U_${GITHUB_REF_NAME}.zip"
-        ls -la RadioM3U_${GITHUB_REF_NAME}.zip
-        
-    - name: Calculate checksum
-      run: |
-        cd RadioM3U/bin/Release/net8.0
-        sha256sum RadioM3U_${GITHUB_REF_NAME}.zip > checksum.txt
-        echo "Checksum:"
-        cat checksum.txt
-        
-    - name: Create GitHub Release
-      uses: actions/create-release@v1
-      id: create_release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref_name }}
-        release_name: RadioM3U ${{ github.ref_name }}
-        body: |
-          ## RadioM3U Plugin ${{ github.ref_name }}
-          
-          Download the ZIP file and extract to your Jellyfin plugins folder.
-          
-          **Installation path:** `/var/lib/jellyfin/plugins/RadioM3U/`
-        draft: false
-        prerelease: false
-        
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: RadioM3U/bin/Release/net8.0/RadioM3U_${{ github.ref_name }}.zip
-        asset_name: RadioM3U_${{ github.ref_name }}.zip
-        asset_content_type: application/zip
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Get project name
+        id: get_project_name
+        run: echo "name=$(basename RadioM3U/RadioM3U.csproj .csproj)" >> $GITHUB_OUTPUT
+
+      - name: Restore dependencies
+        run: dotnet restore RadioM3U/RadioM3U.csproj
+
+      - name: Build
+        run: dotnet build RadioM3U/RadioM3U.csproj --configuration Release --no-restore
+
+      - name: Package plugin
+        run: |
+          mkdir -p "dist/${{ steps.get_project_name.outputs.name }}"
+          cp "RadioM3U/bin/Release/net8.0/${{ steps.get_project_name.outputs.name }}.dll" "dist/${{ steps.get_project_name.outputs.name }}/"
+          cp "RadioM3U/bin/Release/net8.0/${{ steps.get_project_name.outputs.name }}.pdb" "dist/${{ steps.get_project_name.outputs.name }}/"
+          cp manifest.json "dist/${{ steps.get_project_name.outputs.name }}/"
+          cd dist
+          zip -r "${{ steps.get_project_name.outputs.name }}_${{ github.ref_name }}.zip" "${{ steps.get_project_name.outputs.name }}"
+          cd ..
+          sha256sum "dist/${{ steps.get_project_name.outputs.name }}_${{ github.ref_name }}.zip" > "dist/${{ steps.get_project_name.outputs.name }}_${{ github.ref_name }}.zip.sha256sum"
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/${{ steps.get_project_name.outputs.name }}_${{ github.ref_name }}.zip
+            dist/${{ steps.get_project_name.outputs.name }}_${{ github.ref_name }}.zip.sha256sum
