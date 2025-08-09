@@ -1,134 +1,110 @@
-name: Build & Release RadioM3U
+name: Build and Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    tags: [ 'v*' ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Set VERSION from tag
-        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
-        shell: bash
-
-      - name: Restore
-        run: dotnet restore RadioM3U/RadioM3U.csproj
-
-      - name: Build Release
-        run: dotnet build -c Release RadioM3U/RadioM3U.csproj
-
-      - name: Package
-        run: |
-          cd RadioM3U/bin/Release/net8.0
-          # Include all necessary files in the ZIP
-          zip -9 -r RadioM3U_${GITHUB_REF_NAME}.zip RadioM3U.dll RadioM3U.pdb *.json *.deps.json *.runtimeconfig.json 2>/dev/null || zip -9 RadioM3U_${GITHUB_REF_NAME}.zip RadioM3U.dll
-          sha256sum RadioM3U_${GITHUB_REF_NAME}.zip | awk '{print $1}' > sha256.txt
-        shell: bash
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: |
-            RadioM3U/bin/Release/net8.0/RadioM3U_${{ github.ref_name }}.zip
-            RadioM3U/bin/Release/net8.0/sha256.txt
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout tag
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist
-
-      - name: Set VERSION from tag
-        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
-        shell: bash
-
-      - name: Read checksum
-        id: sum
-        run: echo "sha=$(cat dist/sha256.txt)" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            dist/RadioM3U_${{ github.ref_name }}.zip
-          generate_release_notes: true
-
-      - name: Set timestamp
-        run: echo "STAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
-        shell: bash
-
-      - name: Switch to default branch
-        run: |
-          DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
-          git checkout "$DEFAULT_BRANCH"
-        shell: bash
-
-      - name: Update manifest.json
-        uses: DamianReeves/write-file-action@v1.3
-        with:
-          path: manifest.json
-          contents: |
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Get version from tag
+      run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+      
+    - name: Restore dependencies
+      run: dotnet restore RadioM3U/RadioM3U.csproj
+      
+    - name: Build
+      run: dotnet build RadioM3U/RadioM3U.csproj --configuration Release --no-restore
+      
+    - name: Create package
+      run: |
+        cd RadioM3U/bin/Release/net8.0
+        zip -9 RadioM3U_${GITHUB_REF_NAME}.zip RadioM3U.dll
+        ls -la
+        
+    - name: Calculate checksum
+      run: |
+        cd RadioM3U/bin/Release/net8.0
+        CHECKSUM=$(sha256sum RadioM3U_${GITHUB_REF_NAME}.zip | cut -d' ' -f1)
+        echo "CHECKSUM=$CHECKSUM" >> $GITHUB_ENV
+        echo "$CHECKSUM" > checksum.txt
+        echo "Checksum calculated: $CHECKSUM"
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: RadioM3U/bin/Release/net8.0/RadioM3U_${{ github.ref_name }}.zip
+        generate_release_notes: true
+        name: Release ${{ github.ref_name }}
+        body: |
+          ## RadioM3U Plugin Release ${{ github.ref_name }}
+          
+          ### Installation
+          1. Download the `RadioM3U_${{ github.ref_name }}.zip` file
+          2. Extract it to your Jellyfin plugins folder
+          3. Restart Jellyfin
+          
+          **Plugin Repository URL:**
+          ```
+          https://raw.githubusercontent.com/${{ github.repository }}/main/manifest.json
+          ```
+          
+          **SHA256:** `${{ env.CHECKSUM }}`
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Update manifest
+      run: |
+        cat > manifest.json << EOF
+        {
+          "name": "RadioM3U Repository", 
+          "description": "Repository per il plugin RadioM3U che importa playlist M3U come stazioni radio.",
+          "manifestVersion": 1,
+          "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "plugins": [
             {
-              "name": "RadioM3U Repository",
-              "description": "Repository per il plugin RadioM3U che importa playlist M3U come stazioni radio.",
-              "manifestVersion": 1,
-              "timestamp": "${{ env.STAMP }}",
-              "plugins": [
+              "name": "RadioM3U",
+              "guid": "f5c7a89d-107b-4c2f-9f17-6b6540b8e3e8",
+              "version": "${{ env.VERSION }}",
+              "targetAbi": "10.9.0.0", 
+              "framework": "net8.0",
+              "overview": "Importa playlist M3U e crea stazioni radio con cover.",
+              "description": "Importa una playlist .m3u e genera cartelle per gruppo con file .strm, immagini e metadata.",
+              "category": "Music",
+              "owner": "${{ github.repository_owner }}",
+              "imageUrl": "https://raw.githubusercontent.com/${{ github.repository }}/main/01.png",
+              "sourceUrl": "https://github.com/${{ github.repository }}",
+              "changelog": "https://github.com/${{ github.repository }}/releases",
+              "assets": [
                 {
                   "name": "RadioM3U",
-                  "guid": "f5c7a89d-107b-4c2f-9f17-6b6540b8e3e8",
                   "version": "${{ env.VERSION }}",
                   "targetAbi": "10.9.0.0",
-                  "framework": "net8.0",
-                  "overview": "Importa playlist M3U e crea stazioni radio con cover.",
-                  "description": "Importa una playlist .m3u e genera cartelle per gruppo con file .strm, immagini e metadata.",
-                  "category": "Music",
-                  "owner": "${{ github.repository_owner }}",
-                  "imageUrl": "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.event.repository.default_branch }}/01.png",
-                  "sourceUrl": "https://github.com/${{ github.repository }}",
-                  "changelog": "https://github.com/${{ github.repository }}/releases",
-                  "assets": [
-                    {
-                      "name": "RadioM3U",
-                      "version": "${{ env.VERSION }}",
-                      "targetAbi": "10.9.0.0",
-                      "runtime": "any",
-                      "rid": "any",
-                      "assetUrl": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/RadioM3U_${{ github.ref_name }}.zip",
-                      "checksum": "SHA256:${{ steps.sum.outputs.sha }}"
-                    }
-                  ]
+                  "runtime": "any",
+                  "rid": "any", 
+                  "assetUrl": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/RadioM3U_${{ github.ref_name }}.zip",
+                  "checksum": "SHA256:${{ env.CHECKSUM }}"
                 }
               ]
             }
-          write-mode: overwrite
-
-      - name: Commit manifest
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add manifest.json
-          git commit -m "chore: update manifest for ${{ github.ref_name }}" || echo "No changes"
-          git push
-        shell: bash
+          ]
+        }
+        EOF
+        
+    - name: Commit manifest
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add manifest.json
+        git commit -m "Update manifest for release ${{ github.ref_name }}" || echo "No changes to commit"
+        git push || echo "Push failed"
