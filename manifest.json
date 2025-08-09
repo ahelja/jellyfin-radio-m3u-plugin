@@ -25,7 +25,7 @@
           "runtime": "any",
           "rid": "any",
           "assetUrl": "https://github.com/ahelja/jellyfin-radio-m3u-plugin/releases/download/v0.3.3/RadioM3U_v0.3.3.zip",
-          "checksum": "SHA256:b30b0105ea7e3b294a73ed7462954993bcc4382d60831e047c531b5fe930271d"
+          "checksum": "SHA256:ce56a33f7eb58efcb8ced132e1ab86867205b54d7fd3f6e0cbed1ec3db879918"
         }
       ]
     }
